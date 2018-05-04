@@ -1,0 +1,34 @@
+---
+title: "ukfood"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+rawd<- read.csv("https://bioboot.github.io/bggn213_S18/class-material/UK_foods.csv") 
+head(rawd)
+rownames(rawd) <- rawd[,1] ## uh oh. labels are in first column instead of being actual labels
+
+rawd <- rawd[,-1]
+
+dim(rawd)
+knitr::kable(rawd, caption="(full UK foods table")
+heatmap(as.matrix(rawd))
+
+```
+
+heatmap isnt the best function: 
+lets try PCA!
+```{r}
+pca <- prcomp(t(rawd))
+summary(pca)
+
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
+

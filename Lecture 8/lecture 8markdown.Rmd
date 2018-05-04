@@ -1,0 +1,124 @@
+---
+title: "lecture 8"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+generating example data for clustering
+```{r}
+tmp <-  c(rnorm(30,-3), rnorm(30,3))
+x <- cbind( x=tmp, y=rev( tmp))
+
+plot(x)
+```
+
+using kmeans center with k=2 and nstart=20
+```{r}
+km <- kmeans(x, centers = 2, nstart = 20)
+km
+```
+ inspect/print results
+ 
+```{r}
+#cluster sie
+km$size
+#cluster assignment
+km$cluster
+#cluster centers
+km$centers
+```
+ plot x colored by kmeans assignment ad add cluster centers
+ 
+```{r}
+plot(x, col=km$cluster, pch=15)
+points(km$centers, col="blue", pch=16)
+```
+
+Hierachical clustering
+```{r}
+# First we need to calculate point (dis)similarity
+# as the Euclidean distance between observations
+dist_matrix <- dist(x)
+# The hclust() function returns a hierarchical
+# clustering model
+hc <- hclust(d = dist_matrix)
+# the print method is not so useful here
+hc 
+```
+ 
+regular viewing will not work, `dist()` does not output into data frame. 
+
+```{r}
+View( as.matrix(dist_matrix))
+dim(as.matrix(dist_matrix))
+```
+
+plotting
+```{r}
+plot(hc)
+```
+
+adding abline
+and cutting tree to define clusters
+```{r}
+plot(hc)
+abline(h=6, col="red")
+#can either cut by h or by k 
+grps <- cutree(hc, h=6)
+table( grps)
+plot(x, col=grps) # returns same colors as k means clustering above!
+```
+
+
+try different cutting
+
+```{r}
+plot(x, col=cutree(hc, k=3))
+```
+
+```{r}
+# Draws a dendrogram
+plot(hc)
+abline(h=6, col="red")
+grps2<- cutree(hc, k=2 ) # Cut into k grps
+plot(hc, col=grps2)
+```
+
+Trying hierarchal clustering
+
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+ matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2), # c1
+ matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+ matrix(c(rnorm(50, mean = 1, sd = 0.3), # c3
+ rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+# Step 2. Plot the data without clustering
+plot(x)
+# Step 3. Generate colors for known clusters
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+
+```
+
+my attempts
+```{r}
+my.dist.matrix<- dist(x)
+hc2<- hclust(my.dist.matrix)
+grps2<- cutree(hc2, k = 3)
+plot(hc2)
+table(grps2)
+
+```
+
+plotting data colored by cluster
+
+```{r}
+plot(x, col=grps2)
+```
+
