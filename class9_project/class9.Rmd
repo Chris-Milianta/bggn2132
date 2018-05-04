@@ -1,0 +1,138 @@
+---
+title: "class 9"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#unsupervised learning analysis of cancer cells. 
+
+reading input data 
+
+```{r}
+wisc.df<- read.csv ("https://bioboot.github.io/bggn213_S18/class-material/WisconsinCancer.csv")
+head(wisc.df)
+```
+
+How many diagnosis are malign?
+
+```{r}
+table(wisc.df$diagnosis)
+
+```
+
+conversion to datatable (matrix of columns 3 through 32)
+and assigning ID's as a rowname. removal of first two columns as they are ID's and diagnosis. last column becuase it is all NA's
+
+```{r}
+#datam<- as.matrix(wisc.df[ , 3:32])
+# OR use - 
+wisc.data <- wisc.df[-c(1:2,33)]
+#converting ID's to rownames
+rownames(wisc.data) <- wisc.df$id
+```
+
+
+using equality check to get numeric vector. 
+```{r}
+diagnosis <- as.numeric(wisc.df$diagnosis == "M")
+sum(diagnosis)
+```
+calculating number of observations (patients) and 
+use `dim()` or more specifically `nrow()`
+and how many are suffixed with _nmean?
+```{r}
+nrow(wisc.df)
+length(grep("mean", colnames(wisc.df), value = TRUE)) # "invert = TRUE" arguement will return what does NOT match. need to add length arguement to count length of vector 
+```
+
+## principal component analysis.
+It is important to check if the data need to be scaled before performing PCA. Recall two common reasons for scaling data include:
+
+The input variables use different units of measurement.
+The input variables have significantly different variances.
+Check the mean and standard deviation of the features (i.e. columns) of the wisc.data to determine if the data should be scaled. Use the colMeans() and apply() functions like you’ve done before.
+
+```{r}
+colMeans(wisc.data)
+plot( apply(wisc.data,2,sd), type = "h")
+
+```
+
+pca analysis will scale becuase of differences. 
+on first try get error because column X is all NA. 
+```{r}
+wisc.pr <- prcomp(wisc.data, scale. = TRUE)
+summary(wisc.pr)
+
+```
+
+## plotting the PCA results
+```{r}
+plot(wisc.pr$x[,1], wisc.pr$x[,2], col=diagnosis+1)
+```
+
+##skree-plot: variance explained. 
+pca plot gives standard deviation- we need variance for skree plot, 
+```{r}
+pve<- (wisc.pr$sdev^2)/sum(wisc.pr$sdev^2)
+plot(pve, xlab = "principle component",
+     ylab = "proportion of variance explained")
+#maybe barplot will look better
+barplot(pve, names.arg = paste("PC", 1:length(pve)), las=2, axes = FALSE, ylab = "proportion of variance")
+axis(2, at=pve, labels=round(pve,2)*100)
+```
+
+##hierarchical clustering. 
+
+```{r}
+data.dist <- dist(scale(wisc.data))
+wisc.hclust <- hclust(data.dist, method="complete" )
+wisc.hclust.clusters<- cutree(wisc.hclust, k = 4)
+```
+```{r}
+plot(wisc.hclust)
+abline(h = 20, col = 2)
+```
+
+informative tables doing cross tabulation
+
+```{r}
+table(wisc.hclust.clusters, diagnosis)
+```
+
+## kmeans clusters
+
+```{r}
+data.scaled <- scale(wisc.data)
+wisc.km <- kmeans(data.scaled, centers = 2, nstart = 20)
+
+#cluster membership vector
+table(wisc.km$cluster)
+```
+
+comparing to expert `diagnosis` 
+```{r}
+table(wisc.km$cluster, diagnosis)
+```
+
+## clustering on PCA results 
+```{r}
+wisc.pr.hclust <- hclust(dist(wisc.pr$x[, 1:7]), method = "ward.D2")
+plot(wisc.pr.hclust)
+table((cutree(wisc.pr.hclust, k = 2)), diagnosis)
+wisc.pr.hclust.clusters <- cutree(wisc.pr.hclust, k = 2)
+plot(wisc.pr$x[,1:2], col = wisc.pr.hclust.clusters)
+```
+
+Predicting MAlignancy of new samples. 
+```{r}
+new <- read.csv("https://tinyurl.com/new-samples-CSV")
+npc <- predict(wisc.pr, newdata = new)
+
+plot(wisc.pr$x[, 1:2], col= wisc.pr.hclust.clusters)
+points(npc[,1], npc[,2], col=c("purple", "blue"), pch=16, cex = 2.5)
+```
+
