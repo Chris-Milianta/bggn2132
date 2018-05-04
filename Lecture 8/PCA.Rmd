@@ -1,6 +1,7 @@
 ---
 title: "pca"
 output: html_document
+keep_md: yes
 ---
 
 ```{r setup, include=FALSE}

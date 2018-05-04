@@ -132,6 +132,53 @@ x</code></pre>
 <pre><code>## [1] &quot;gene1&quot; &quot;gene2&quot; &quot;gene3&quot;</code></pre>
 <pre class="r"><code>y</code></pre>
 <pre><code>## [1] &quot;gene2&quot; &quot;gene4&quot; &quot;gene3&quot; &quot;gene5&quot;</code></pre>
+<pre class="r"><code>## finding intersect
+
+intersect(x,y)</code></pre>
+<pre><code>## [1] &quot;gene2&quot; &quot;gene3&quot;</code></pre>
+<pre class="r"><code>## or `%in%` works
+x %in% y</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE</code></pre>
+<p>we can use the logical output in <code>%in%</code> to get at our data</p>
+<pre class="r"><code>##will output gene names
+x[x %in% y]</code></pre>
+<pre><code>## [1] &quot;gene2&quot; &quot;gene3&quot;</code></pre>
+<pre class="r"><code>y[y %in% x]</code></pre>
+<pre><code>## [1] &quot;gene2&quot; &quot;gene3&quot;</code></pre>
+<p>lets put together as columns of a matrix</p>
+<pre class="r"><code>cbind( x[x %in% y], y[y %in% x] )</code></pre>
+<pre><code>##      [,1]    [,2]   
+## [1,] &quot;gene2&quot; &quot;gene2&quot;
+## [2,] &quot;gene3&quot; &quot;gene3&quot;</code></pre>
+<p>turn into function</p>
+<pre class="r"><code>gene_intersect &lt;- function(x, y) { 
+   cbind( x[ x %in% y ], y[ y %in% x ] )
+}
+## test it 
+gene_intersect(x,y)</code></pre>
+<pre><code>##      [,1]    [,2]   
+## [1,] &quot;gene2&quot; &quot;gene2&quot;
+## [2,] &quot;gene3&quot; &quot;gene3&quot;</code></pre>
+<p>trying with data.frame input rather than vectors</p>
+<pre class="r"><code>gene_intersect2(df1,df2)</code></pre>
+<pre><code>##     IDs exp df2[df2$IDs %in% df1$IDs, &quot;exp&quot;]
+## 2 gene2   1                               -2
+## 3 gene3   1                                1</code></pre>
+<p>looks good but its skateboard not a car. Adding some flexibility for col name to match by</p>
+<pre class="r"><code>gene_intersect3(df1,df2)</code></pre>
+<pre><code>##     IDs exp exp2
+## 2 gene2   1   -2
+## 3 gene3   1    1</code></pre>
+<p>making it more human friendly</p>
+<pre class="r"><code>(gene_intersect4(df1,df2))</code></pre>
+<pre><code>##     IDs exp exp2
+## 2 gene2   1   -2
+## 3 gene3   1    1</code></pre>
+<p><code>merge()</code> also works and is built in.</p>
+<pre class="r"><code>merge(df1, df2, by=&quot;IDs&quot;)</code></pre>
+<pre><code>##     IDs exp.x exp.y
+## 1 gene2     1    -2
+## 2 gene3     1     1</code></pre>
 </div>
 
 
