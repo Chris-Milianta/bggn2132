@@ -4,7 +4,7 @@ author: "Barry Grant"
 date: "3/2/2018"
 output:
   html_document:
-    df_print: paged
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -90,7 +90,7 @@ y <- c("OAT3" = 0, "mPGP" = 1, "Flou" = 2, "OSCA" = 3)[x]
 dend <- as.dendrogram(hc.trim)
 dend1 <- color_branches(dend, k = 4)
 #labels_colors(dend1) <- y
-pdf("plot_trim_tree.pdf", width=14)
+#pdf("plot_trim_tree.pdf", width=14)
 plot(dend1)
 dev.off()
 
@@ -103,3 +103,16 @@ plot(hc.all)
 #coltree<- cutree(hc.trim, k=4) # maybe kmeans is better for what I want. 
 
 # labels_colors(dend) <- coltree  , colors labels based on matrix. will impliment for target.  
+
+```{r}
+labelstrim <- substr(hc.trim$labels, 1,4)
+labelstrim
+```
+
+```{r}
+labels2num <- function(x) {
+  
+  return()
+}
+```
+
