@@ -1,0 +1,70 @@
+---
+title: "Finding intersection"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# a function that is actually useful. 
+```{r}
+source("http://tinyurl.com/rescale-R")
+
+x <- df1$IDs
+y <- df2$IDs
+x
+y
+
+## finding intersect
+
+intersect(x,y)
+## or `%in%` works
+x %in% y
+
+```
+
+we can use the logical output in `%in%` to get at our data 
+```{r}
+##will output gene names
+x[x %in% y]
+y[y %in% x]
+```
+
+lets put together as columns of a matrix
+
+```{r}
+cbind( x[x %in% y], y[y %in% x] )
+```
+
+turn into function
+```{r}
+gene_intersect <- function(x, y) { 
+   cbind( x[ x %in% y ], y[ y %in% x ] )
+}
+## test it 
+gene_intersect(x,y)
+```
+
+trying with data.frame input rather than vectors
+
+```{r}
+gene_intersect2(df1,df2)
+```
+
+looks good but its skateboard not a car. 
+Adding some flexibility for col name to match by 
+```{r}
+gene_intersect3(df1,df2)
+```
+
+making it more human friendly 
+```{r}
+(gene_intersect4(df1,df2))
+```
+
+`merge()` also works and is built in. 
+```{r}
+merge(df1, df2, by="IDs")
+```
+

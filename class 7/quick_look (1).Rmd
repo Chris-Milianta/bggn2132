@@ -1,0 +1,78 @@
+---
+title: "Untitled"
+author: "Barry Grant"
+date: "3/2/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## A qucik report
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(bio3d)
+```
+
+Note if you want to run this you will need to install the bio3d package. This would be a one time only thing
+
+```{r, eval=FALSE}
+install.packages(bio3d)
+```
+
+Read your alignment
+```{r}
+## Read your alignment file
+raw <- read.fasta("alignment.fa", rm.dup=FALSE)
+```
+
+Clean IDs and write a new alignment file
+
+```{r}
+new <- raw
+new$id <- paste0(1:length(raw$id), "_", raw$id)
+write.fasta(new, file="alignment_cleanIDs.fasta")
+```
+
+```{r}
+## Sequence identity
+ide <- seqidentity(new)
+
+hc.all <- hclust(as.dist(1-ide))
+plot(hc.all)
+```
+
+Trim to your region and do analysis
+```{r}
+## Trim to your region 49 to 157
+trim.aln <- new
+trim.aln$ali <- trim.aln$ali[,49:157]
+
+## Sequence identity of trimed alignment section.
+trim.ide <- seqidentity(trim.aln)
+
+hc.trim <- hclust(as.dist(1-trim.ide))
+
+plot(hc.trim)
+
+```
+
+Make seperate PDFs
+
+```{r}
+pdf("plot_trim_tree.pdf", width=14)
+plot(hc.trim)
+dev.off()
+
+pdf("plot_full_tree.pdf", width=14)
+plot(hc.all)
+dev.off()
+
+```
+
+

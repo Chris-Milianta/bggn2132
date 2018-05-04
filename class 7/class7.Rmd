@@ -1,0 +1,89 @@
+---
+title: "Bioinformatics Class 7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#functions again
+we can source any file or F code with the `source`() function. 
+```{r}
+source("http://tinyurl.com/rescale-R")
+
+```
+lets make sure things are here
+
+```{r}
+ls()
+```
+
+check `rescale()` function is working
+
+```{r}
+rescale(1:10)
+```
+
+
+break 
+```{r,eval=FALSE}
+rescale( c(1:10,"string"))
+```
+
+Lets check if `rescale2()` does better 
+
+```{r,eval=FALSE}
+rescale2( c(1:10,"string"))
+```
+## Function for finding missing values in two datasets
+
+write a `both_na()` function to do this 
+```{r}
+x <-  c(1, 2, NA, 3, NA)
+y <-  c(NA, 3, NA, 3, 4)
+is.na(x)
+
+```
+```{r}
+which( is.na(x) )
+
+```
+```{r}
+sum( is.na(x) )
+```
+
+using `&` operator and `sum()` to find how many things are missing in both experiments
+```{r}
+is.na(x) & is.na(y)
+sum(is.na(x) & is.na(y))
+```
+
+now make function from this snippet. 
+
+```{r}
+both_na <- function(x,y) {
+  sum(is.na(x) & is.na(y) ) 
+}
+```
+
+"eejit proof" testing 
+```{r}
+x <- c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA)
+
+#both_na(x,y2)
+#gives error!
+```
+using `both_na2()` with != operator
+
+```{r, eval=FALSE}
+x <- c(NA, NA, NA)
+y1 <- c( 1, NA, NA)
+y2 <- c( 1, NA, NA, NA)
+both_na2(x,y2)
+```
+
+
+

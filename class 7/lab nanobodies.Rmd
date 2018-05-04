@@ -1,0 +1,24 @@
+---
+title: "lab nanobodies"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(bio3d)
+x <- read.fasta("muscle+labnanobodies_truncname.fst")
+```
+```{r}
+#par( cex=1.5)
+#par( pin=c(5,5))
+
+plot.fasta(x)
+#dx <- read.table('distancematrix_all_smallnames.txt',sep='\t')
+#hc <- hclust(dx)
+#plot(hc)
+```
+
