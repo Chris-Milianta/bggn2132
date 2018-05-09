@@ -105,8 +105,16 @@ plot(hc.all)
 # labels_colors(dend) <- coltree  , colors labels based on matrix. will impliment for target.  
 
 ```{r}
-labelstrim <- substr(hc.trim$labels, 1,4)
-labelstrim
+labelstrim <- as.matrix(substr(hc.trim$labels, 1,4))
+#labelstrim
+
+#for elabelstrim[1:nrow(labelstrim), 1:ncol(labelstrim)] {
+#  if x[i] == 
+#}
+for (name in labelstrim) {
+  name
+}
+
 ```
 
 ```{r}
