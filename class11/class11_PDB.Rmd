@@ -19,4 +19,110 @@ percent <- (p$Total / sum(p$Total))*100
 names(percent) <- row.names(p)
 percent
 ```
+```{r}
+library (bio3d)
+```
+ 
+ reading pdb for stripping out drug molecule. 
+ 
+```{r}
+pdb <- read.pdb("1HSG")
+
+print(pdb)
+attributes(pdb)
+head(pdb$atom)
+plot.bio3d(pdb$atom$b[pdb$calpha], sse=pdb, typ="l", ylab="B-factor")
+           
+```
+ 
+selecting protein/ligand elements
+```{r}
+inds.ligand <- atom.select(pdb, "ligand")
+inds.protein <- atom.select(pdb, "protein")
+inds.ligand
+```
+checking we have what we want 
+```{r}
+head(pdb$atom[inds.protein$atom,])
+```
+
+creating new pdb file outputs
+```{r}
+pdb.ligand <- trim.pdb(pdb,inds = inds.ligand)
+pdb.ligand
+write.pdb(pdb.ligand, file="1hsg_ligand.pdb")
+
+pdb.protein <- trim.pdb(pdb,inds = inds.protein)
+write.pdb(pdb.ligand, file="1hsg_protein.pdb")
+```
+
+aligning multiple structures
+```{r}
+ids <- c("1TND_B","1AGR_A","1TAG_A","1GG2_A","1KJY_A","4G5Q_A")
+files <- get.pdb(ids, split = TRUE)
+
+#extract and align the chains we are interested in 
+pdbs <- pdbaln(files, fit = TRUE)
+
+```
+```{r}
+pdbs
+```
+
+getting sequence for interested protein OXA 23 
+
+```{r}
+aa <-  get.seq("4jf4_A")
+aa
+b <- blast.pdb(aa)
+hits <- plot(b, cutoff = 200)
+```
+
+```{r}
+# Fetch PDBs
+files <- get.pdb(hits$pdb.id, path = "pdbs", split = TRUE, gzip =
+TRUE)
+# Align structures
+pdbs <- pdbaln(files)
+# Vector containing PDB codes
+ids <- basename.pdb(pdbs$id)
+# Draw schematic alignment
+plot(pdbs, labels=ids)
+```
+5.2 Sequence conservation analysis
+
+```{r}
+# Calculate sequence conservation
+cons <- conserv(pdbs, method="entropy22")
+# SSE annotations
+sse <- pdbs2sse(pdbs, ind=1, rm.gaps=FALSE)
+# Plot conservation per residue
+plotb3(cons, sse=sse, ylab="Sequence entropy")
+```
+
+```{r}
+# find invariant core
+core <- core.find(pdbs)
+# superimpose all structures to core
+pdbs$xyz = pdbfit(pdbs, core)
+# Perform PCA
+pc.xray <- pca(pdbs)
+```
+
+rmsd structure based clustering 
+
+```{r}
+# find invariant core
+core <- core.find(pdbs)
+# superimpose all structures to core
+pdbs$xyz = pdbfit(pdbs, core)
+# Perform PCA
+pc.xray <- pca(pdbs)
+```
+
+
+generating trajectory pdb file 
+```{r}
+mktrj(pc.xray, pc=1, file="pc_1.pdb")
+```
 
